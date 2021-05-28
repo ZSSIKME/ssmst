@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spz.dao.ActivityMapper">
+
+    <!--查询所有活动-->
+    <resultMap id="actlist" type="com.spz.pojo.Activity">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="info" column="info"/>
+        <result property="place" column="place"/>
+        <result property="act_time" column="act_time"/>
+        <result property="act_end_time" column="act_end_time"/>
+        <association property="student" javaType="com.spz.pojo.Student">
+            <id property="num" column="num"/>
+            <result property="name" column="stu_name"/>
+            <result property="classroom" column="classroom"/>
+            <result property="phone" column="phone"/>
+        </association>
+        <association property="organization" javaType="com.spz.pojo.Organization">
+            <result property="name" column="org_name"/>
+        </association>
+    </resultMap>
+    
+    <select id="findall" resultMap="actlist">
+        SELECT a.id,a.name,a.info,a.place,a.act_time,a.act_end_time,s.num,s.name as stu_name,s.classroom,s.phone,o.`name` as org_name
+        from activity a left join student s on a.ma_num=s.num
+        left join organization o on a.org_id=o.id
+    </select>
+
+    <select id="findallFilter" resultMap="actlist">
+        SELECT a.id,a.name,a.info,a.place,a.act_time,a.act_end_time,s.num,s.name as stu_name,s.classroom,s.phone,o.`name` as org_name
+        from activity a left join student s on a.ma_num=s.num
+        left join organization o on a.org_id=o.id where 1=1
+        <if test="act_name!=null">
+            and a.name like CONCAT('%',#{act_name},'%')
+        </if>
+        <if test="act_mana!=null">
+            and s.name like CONCAT('%',#{act_mana},'%')
+        </if>
+    </select>
+
+    <select id="findBynames" resultMap="actlist">
+        SELECT a.id,a.name,a.info,a.place,a.act_time,a.act_end_time,s.num,s.name as stu_name,s.classroom,s.phone,o.`name` as org_name
+        from activity a left join student s on a.ma_num=s.num
+        left join organization o on a.org_id=o.id where 1=1
+        <if test="actname!=null">
+            and a.name like CONCAT('%',#{actname},'%')
+        </if>
+        <if test="orgname!=null">
+            and o.name like CONCAT('%',#{orgname},'%')
+        </if>
+        <if test="stuname!=null">
+            and s.name like CONCAT('%',#{stuname},'%')
+        </if>
+    </select>
+
+
+<!--通过id查询活动详细信息-->
+    <resultMap id="actidinfo" type="com.spz.pojo.Activity">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="info" column="info"/>
+        <result property="place" column="place"/>
+        <result property="act_time" column="act_time"/>
+        <result property="act_end_time" column="act_end_time"/>
+        <association property="student" javaType="com.spz.pojo.Student">
+            <result property="phone" column="phone"/>
+            <result property="name" column="stu_name"/>
+            <result property="classroom" column="classroom"/>
+        </association>
+    </resultMap>
+
+
+    <select id="findById" resultMap="actidinfo">
+        SELECT a.place,a.`name`,a.info,a.id,a.act_time,a.act_end_time,s.phone,s.`name` as stu_name,s.classroom
+        from activity a left join student s on a.ma_num =s.num
+        where a.id=#{id};
+    </select>
+
+    <!--通过社团id删除活动-->
+    <delete id="deleactByOrgId">
+        DELETE from  activity where org_id=#{org_id}
+    </delete>
+
+
+    <!--通过学号查询所有管理的活动信息列表-->
+    <select id="findActBynum" resultType="com.spz.pojo.Activity">
+        select * from activity where ma_num=#{managernum}
+    </select>
+
+
+    <resultMap id="actstulist" type="com.spz.pojo.Stu_act">
+        <result property="act_id" column="act_id"/>
+        <result property="stu_num" column="stu_num"/>
+        <result property="sign" column="sign"/>
+        <association property="student" javaType="com.spz.pojo.Student">
+            <result property="name" column="name"/>
+            <result property="sex" column="sex"/>
+            <result property="classroom" column="classroom"/>
+            <result property="phone" column="phone"/>
+        </association>
+    </resultMap>
+    <!--查询该活动下的学生-->
+    <select id="showAct_stuList" resultMap="actstulist">
+        select sa.act_id,sa.stu_num,s.`name`,s.sex,s.classroom,s.phone,sa.sign from stu_act sa left JOIN student s on sa.stu_num=s.num
+        where sa.act_id=#{act_id}
+    </select>
+
+
+    <!--创建活动-->
+    <insert id="creatact" parameterType="com.spz.pojo.Activity">
+        insert into activity(id,name,info,ma_num,org_id,place,act_time,act_end_time) values (#{id},#{name},#{info},#{ma_num},#{org_id},#{place},
+        #{act_time},#{act_end_time})
+    </insert>
+
+    <!--通过活动id删除活动-->
+    <delete id="delact">
+        delete from activity where id=#{id}
+    </delete>
+
+    <!--修改活动信息-->
+    <update id="alertact" parameterType="com.spz.pojo.Activity">
+        update activity set name=#{name},info=#{info},place=#{place},act_time=#{act_time},act_end_time=#{act_end_time}
+        where id=#{id}
+    </update>
+</mapper>

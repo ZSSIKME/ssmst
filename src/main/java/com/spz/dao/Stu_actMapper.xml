@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spz.dao.Stu_actMapper">
+    <resultMap id="myact" type="com.spz.pojo.Stu_act">
+        <result property="act_id" column="act_id"/>
+        <result property="sign" column="sign"/>
+        <association property="student" javaType="com.spz.pojo.Student">
+            <result property="name" column="stuname"/>
+            <result property="phone" column="phone"/>
+        </association>
+        <association property="activity" javaType="com.spz.pojo.Activity">
+            <result property="name" column="act_name"/>
+            <result property="place" column="place"/>
+            <result property="info" column="info"/>
+            <result property="act_time" column="act_time"/>
+            <result property="act_end_time" column="act_end_time"/>
+        </association>
+    </resultMap>
+
+    <select id="findBynum" resultMap="myact">
+            select sa.act_id,sa.sign,a.`name` as act_name,a.info,a.place,a.act_time,a.act_end_time,s.`name` as stuname,s.phone
+	from stu_act sa left join activity a on sa.act_id=a.id
+	left join student s on sa.stu_num=s.num
+	where sa.stu_num=#{stu_num}
+    </select>
+
+    <select id="findBynumName" resultMap="myact">
+        select sa.act_id,sa.sign,a.`name` as act_name,a.info,a.place,a.act_time,a.act_end_time,s.`name` as stuname,s.phone
+	    from stu_act sa left join activity a on sa.act_id=a.id
+	    left join student s on sa.stu_num=s.num where sa.stu_num=#{stu_num}
+	    <if test="actname!=null">
+            and a.name like CONCAT('%',#{actname},'%')
+        </if>
+    </select>
+
+    <!--添加活动-->
+    <insert id="joinact">
+        insert into stu_act values (#{stu_num},#{act_id},0)
+    </insert>
+
+    <!--查看是否已经参加过该活动-->
+    <select id="isjoinByid" resultType="int">
+        select count(*) from stu_act  sa where sa.stu_num=#{stu_num} and sa.act_id=#{act_id}
+    </select>
+
+    <!--学生进行签到-->
+    <update id="signinact">
+        update stu_act set sign=1 where stu_num=#{stu_num} and act_id=#{act_id}
+    </update>
+
+    <!--学生取消加入活动-->
+    <delete id="cancelact">
+        delete from stu_act where stu_num=#{stu_num} and act_id=#{act_id}
+    </delete>
+</mapper>
