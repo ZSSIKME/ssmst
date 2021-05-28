@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spz.dao.NewsMapper">
+    <select id="findByOrg" resultType="com.spz.pojo.News">
+        select * from news where org_num=#{org_num}
+    </select>
+
+  <!--  <resultMap id="newslist1" type="com.spz.pojo.Student">
+        <collection property="organizationList" ofType="com.spz.pojo.Organization">
+            <result property="name" column="name"/>
+            <collection property="newsList" ofType="com.spz.pojo.News">
+                <id property="id" column="id"/>
+                <result property="detail" column="detail"/>
+                <result property="newstime" column="newstime"/>
+            </collection>
+        </collection>
+    </resultMap>-->
+
+    <resultMap id="newslist" type="com.spz.pojo.News">
+        <id property="id" column="id"/>
+        <result property="detail" column="detail"/>
+        <result property="newstime" column="newstime"/>
+        <association property="organization" javaType="com.spz.pojo.Organization">
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+    <select id="findBystuNumAndRole" resultMap="newslist">
+        select org.name,news.id,news.detail,news.newstime from stu_org so left join organization org on so.stu_org=org.id
+        right join news on org.id=news.org_num where so.stu_num=#{stu_num} and so.stu_statu=#{stu_statu}
+    </select>
+
+
+    <!--按照条件查找该学生的通知-->
+    <select id="findBystuNumAndRoleFilter" resultMap="newslist">
+        select org.name,news.id,news.detail,news.newstime from stu_org so left join organization org on so.stu_org=org.id
+        right join news on org.id=news.org_num where so.stu_num=#{stu_num} and so.stu_statu=#{stu_statu}
+        <if test="orgname!=null">
+            and org.name like CONCAT('%',#{orgname},'%')
+        </if>
+    </select>
+
+    <!--修改通知信息-->
+    <update id="editornews">
+        update news set detail=#{detail} where id=#{id}
+    </update>
+
+    <!--删除通知-->
+    <delete id="delnews">
+        delete from news where id=#{id}
+    </delete>
+
+    <!--创建通知-->
+    <insert id="createnews">
+        insert into news(id,detail,org_num,newstime) values (#{id},#{detail},#{org_num},#{newstime})
+    </insert>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spz.dao.GoodsMapper">
+    <delete id="deleGoodsByOrgId">
+        DELETE from  goods where organiza=#{org_id}
+    </delete>
+
+    <!--显示社团的说有物品信息-->
+    <select id="showallGoogs" resultType="com.spz.pojo.Goods">
+        SELECT * from goods where organiza=#{org_id}
+    </select>
+
+    <select id="showallGoogsName" resultType="com.spz.pojo.Goods">
+        SELECT * from goods where organiza=#{org_id}
+        <if test="GoodsName!=null">
+            and name like CONCAT('%',#{GoodsName},'%')
+        </if>
+    </select>
+
+    <!--通过id查询物品信息-->
+    <select id="findGoodsByid" resultType="com.spz.pojo.Goods">
+        select * from goods where id=#{id}
+    </select>
+
+    <!--修改物品的信息-->
+    <update id="alterGoods">
+        update goods set name=#{name},num=#{num} where id=#{id}
+    </update>
+
+    <delete id="delgoods">
+        delete from goods where id=#{id}
+    </delete>
+
+    <insert id="addgoods">
+        insert into goods(name,num,organiza) values (#{name},#{num},#{organiza})
+    </insert>
+</mapper>

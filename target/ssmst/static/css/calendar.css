@@ -1,0 +1,169 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: "微软雅黑";
+	font-size: 12px;
+	color: #888;
+}
+
+a,
+a:hover {
+	color: #888;
+	text-decoration: none;
+}
+
+ul,
+li {
+	list-style: none;
+}
+
+.calendar {
+	display: none;
+	width: 260px;
+	padding: 3px;
+	margin: 15px auto 0;
+	background-color: rgba(1, 1, 1, .0);
+	border: none;
+}
+
+.calendar-title {
+	position: relative;
+	height: 10px;
+	line-height: 10px;
+	padding: 3px 0;
+}
+
+.calendar-title a.title {
+	display: inline-block;
+	font-size: 16px;
+	text-indent: 10px;
+	color: white;
+}
+
+.calendar-title a.title:hover {
+	background-color: rgba(1, 1, 1, .0);
+	cursor: default;
+}
+
+#backToday {
+	position: absolute;
+	left: 50%;/* 原70% */
+	top: 3px;
+	width: 20px;
+	height: 20px;
+	line-height: 12px;
+	text-align: center;
+	color: #fff;
+	background-color: #009587;
+	font-size: 14px;
+}
+
+.calendar-title .arrow {
+	position: absolute;
+	top: 5px;
+	right: 40px;  /* 原0 */
+	width: 43px;
+}
+
+.calendar-title .arrow span {
+	color: #ddd;
+	font-size: 20px;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.calendar-title .arrow span:hover {
+	color: #000000;
+}
+
+.calendar-title .arrow-prev {
+	float: left;
+}
+
+.calendar-title .arrow-next {
+	float: right;
+}
+
+.calendar-week,
+.calendar-date {
+	overflow: hidden;
+	width: 210px;	/* 新加 */
+}
+
+.calendar-week .item {
+	float: left;
+	width: 30px;   /* 原35 */
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	padding-top: 11px;
+	font-size: 12px;
+}
+
+.calendar-date .item {
+	float: left;
+	width: 30px;   /* 原35 */
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+}
+
+.calendar-week {
+	padding-bottom: 10px;
+	border-bottom: 1px solid #009587;
+	font-weight: bold;
+}
+
+.calendar-date .item {
+	cursor: pointer;
+	font-size: 12px;
+}
+
+.calendar-date .item:hover,
+.calendar-date .item-curMonth:hover {
+	background-color: #27A9E3;
+}
+
+.calendar-date .item-curMonth {
+	color: #D4D4D4;
+}
+
+.calendar-date .item-curDay,
+.calendar-date .item-curDay:hover {
+	color: #fff;
+	background-color: #009587;
+}
+
+.calendar-today {
+	display: none;
+	position: absolute;
+	width: 48px;
+	height: 44px;
+	padding: 5px 6px;
+	background-color: #009587;
+	border-radius: 5px;
+}
+
+.calendar-today .triangle {
+	position: absolute;
+	top: 52px;
+	left: 17px;
+	margin-top: -8px;
+	border-width: 8px;
+	border-style: solid;
+	border-color: #009587 transparent transparent transparent;
+	display: inline;
+}
+
+.calendar-today p {
+	color: #fff;
+	font-size: 12px;
+	line-height: 12px;
+}

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spz.dao.StudentMapper">
+    <insert id="addStudent" parameterType="com.spz.pojo.Student">
+        insert into student(num,name,sex,pwd,classroom,age,IdCard,phone) values (#{num},#{name},#{sex},#{pwd},#{classroom},#{age},#{IdCard},#{phone})
+    </insert>
+
+    <select id="findByNum" resultType="com.spz.pojo.Student">
+        select * from student where num=#{num}
+    </select>
+
+    <select id="checkstu" resultType="com.spz.pojo.Student">
+        select * from student where
+        num=#{num}
+        and IdCard=#{IdCard}
+        and name=#{name}
+        and phone=#{phone}
+    </select>
+
+    <update id="updatepwd">
+        update student set pwd=#{pwd} where num=#{num}
+    </update>
+
+    <update id="alterinfo" parameterType="com.spz.pojo.Student">
+        update student set name=#{name},sex=#{sex},pwd=#{pwd},classroom=#{classroom},age=#{age},
+        idCard=#{idCard},phone=#{phone} where num=#{num}
+    </update>
+
+
+    <!--map-->
+    <resultMap id="orgstulist" type="com.spz.pojo.Stu_org">
+        <result property="jion_time" column="jion_time"/>
+        <result property="roleID" column="roleID"/>
+        <result property="stu_num" column="stu_num"/>
+        <association property="student" javaType="com.spz.pojo.Student">
+            <result property="name" column="name"/>
+            <result property="sex" column="sex"/>
+            <result property="classroom" column="classroom"/>
+            <result property="phone" column="phone"/>
+            <result property="age" column="age"/>
+        </association>
+    </resultMap>
+    <!--查询社团内的学生-->
+    <select id="showstudentlist" resultMap="orgstulist">
+        SELECT so.jion_time,so.roleID,so.stu_num,s.`name`,s.sex,s.classroom,s.phone,s.age
+        from stu_org so left join student s on so.stu_num=s.num
+        where so.stu_org=#{org_id} and so.stu_statu=1
+    </select>
+
+    <select id="showstudentlistFilter" resultMap="orgstulist">
+        SELECT so.jion_time,so.roleID,so.stu_num,s.`name`,s.sex,s.classroom,s.phone,s.age
+        from stu_org so left join student s on so.stu_num=s.num
+        where so.stu_org=#{org_id} and so.stu_statu=1
+        <if test="stu_name!=null">
+            and s.name like CONCAT('%',#{stu_name},'%')
+        </if>
+        <if test="classroom!=null">
+            and s.classroom like CONCAT('%',#{classroom},'%')
+        </if>
+    </select>
+
+    <select id="showallstu" resultType="com.spz.pojo.Student">
+        select * from student
+    </select>
+    <select id="showallstuFilter" resultType="com.spz.pojo.Student">
+        select * from student where 1=1
+        <if test="stuname!=null">
+            and name like CONCAT('%',#{stuname},'%')
+        </if>
+        <if test="classroom!=null">
+            and classroom like CONCAT('%',#{classroom},'%')
+        </if>
+    </select>
+    
+    <!--通过学号删除学生-->
+    <delete id="delstu">
+        delete from student where num=#{num}
+    </delete>
+</mapper>

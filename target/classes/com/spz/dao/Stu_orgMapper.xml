@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spz.dao.Stu_orgMapper">
+    <select id="findByRoleAndNum" resultType="com.spz.pojo.Stu_org">
+        select * from stu_org where stu_num=#{stu_num} and roleID=#{roleID} and stu_statu=1
+    </select>
+
+    <select id="findByNum" resultType="com.spz.pojo.Stu_org">
+        select * from stu_org where stu_num=#{stu_num}
+    </select>
+
+    <resultMap id="applorgs" type="com.spz.pojo.Stu_org">
+        <result property="stu_statu" column="stu_statu"/>
+        <result property="stu_org" column="stu_org"/>
+        <association property="organization" javaType="com.spz.pojo.Organization">
+            <result property="name" column="name"/>
+            <result property="info" column="info"/>
+            <result property="create_time" column="create_time"/>
+        </association>
+    </resultMap>
+    <!--通过学号和状态查询正在申请的社团-->
+    <select id="fingByNumAndSta" resultMap="applorgs">
+        SELECT o.`name`,o.info,o.create_time,so.stu_org,so.stu_statu  from stu_org so left join organization o on so.stu_org=o.id
+        where so.stu_num=#{stu_num} and so.stu_statu=#{stu_statu}
+    </select>
+
+
+
+
+    <select id="findCount" resultType="int">
+        select count(*) from stu_org where stu_org=#{stu_org} and stu_statu=1
+    </select>
+
+    <insert id="joinorg" parameterType="com.spz.pojo.Stu_org">
+        insert into stu_org (stu_num,stu_org,jion_time,roleID,stu_statu) values(#{stu_num},#{stu_org},#{jion_time},#{roleID},#{stu_statu})
+    </insert>
+    <select id="isjoinOrg" resultType="int">
+        select count(*) from stu_org where stu_num=#{stu_num} and stu_org=#{stu_org}
+    </select>
+
+    <resultMap id="myorglist" type="com.spz.pojo.Stu_org">
+        <result property="jion_time" column="jion_time"/>
+        <result property="stu_org" column="stu_org"/>
+        <result property="stu_num" column="stu_num"/>
+        <association property="organization" javaType="com.spz.pojo.Organization">
+            <result property="info" column="info"/>
+            <result property="name" column="org_name"/>
+        </association>
+        <association property="student" javaType="com.spz.pojo.Student">
+            <result property="name" column="stu_name"/>
+            <result property="phone" column="phone"/>
+            <result property="classroom" column="classroom"/>
+        </association>
+
+
+    </resultMap>
+    <select id="findByNumStaROle" resultMap="myorglist">
+       select so.stu_org,so.jion_time,org.name as org_name,org.info,student.name as stu_name,so.stu_num,student.phone,student.classroom
+        from stu_org so LEFT join organization org on so.stu_org=org.id left join
+        student on org.managernum=student.num
+        where so.stu_num=#{stu_num} and so.stu_statu=#{stu_statu} and so.roleID=#{roleID}
+    </select>
+
+
+    <resultMap id="orgstulist" type="com.spz.pojo.Stu_org">
+        <result property="jion_time" column="jion_time"/>
+        <result property="stu_org" column="stu_org"/>
+        <result property="stu_num" column="stu_num"/>
+        <association property="organization" javaType="com.spz.pojo.Organization">
+            <result property="name" column="org_name"/>
+        </association>
+        <association property="student" javaType="com.spz.pojo.Student">
+            <result property="name" column="name"/>
+            <result property="sex" column="sex"/>
+            <result property="classroom" column="classroom"/>
+            <result property="phone" column="phone"/>
+        </association>
+    </resultMap>
+    <select id="findstuByid" resultMap="orgstulist">
+            select  so.jion_time,o.name as org_name,so.stu_num,s.name,s.sex,s.classroom,s.phone,so.stu_org
+            from stu_org so left join student s on so.stu_num=s.num
+            left join organization o on so.stu_org=o.id
+            where so.stu_org=#{id} and so.stu_statu='1'
+    </select>
+    <!--退出社团-->
+    <delete id="exitorg">
+        DELETE from stu_org where stu_num=#{stu_num} and stu_org=#{stu_org}
+    </delete>
+
+
+    <!--学生取消申请社团-->
+    <delete id="cencelorg">
+            delete from stu_org where stu_num=#{stu_num} and stu_org=#{stu_org} and stu_statu=0
+    </delete>
+
+    <!--删除一个社团的所有学生-->
+    <delete id="deleStuByorgID">
+        DELETE from  stu_org where stu_org=#{org_id}
+    </delete>
+
+    <resultMap id="apply_stu_list" type="com.spz.pojo.Stu_org">
+        <result property="stu_num" column="stu_num"/>
+        <result property="stu_org" column="stu_org"/>
+        <result property="jion_time" column="jion_time"/>
+        <association property="student" javaType="com.spz.pojo.Student">
+            <result property="name" column="name"/>
+            <result property="sex" column="sex"/>
+            <result property="classroom" column="classroom"/>
+            <result property="age" column="age"/>
+            <result property="phone" column="phone"/>
+        </association>
+    </resultMap>
+
+    <!--查询社团申请学生-->
+    <select id="apply_stu_list" resultMap="apply_stu_list">
+        select so.stu_num,so.stu_org,so.jion_time,s.name,s.sex,s.classroom,s.age,s.phone from stu_org so left join student s on so.stu_num=s.num
+        where so.stu_org=#{stu_org} and so.stu_statu=0
+    </select>
+
+    <resultMap id="managerorg" type="com.spz.pojo.Stu_org">
+        <result property="stu_org" column="stu_org"/>
+        <result property="stu_num" column="stu_num"/>
+        <result property="jion_time" column="jion_time"/>
+        <association property="organization" javaType="com.spz.pojo.Organization">
+            <result property="name" column="name"/>
+            <result property="info" column="info"/>
+        </association>
+    </resultMap>
+    <select id="findorgByNum" resultMap="managerorg">
+        SELECT so.stu_org,so.stu_num,so.jion_time, o.`name`,o.info from stu_org so left join organization o on so.stu_org=o.id
+        where stu_num=#{stu_num} and roleID=2
+    </select>
+
+    <!--查看是否是社团管理员-->
+    <select id="is_manager" resultType="int">
+        select count(1) from stu_org where stu_num=#{stu_num} and roleID=2
+    </select>
+
+    <!--同意社团创建申请-->
+    <update id="a_agreeorg">
+        update stu_org set stu_statu=1 where stu_num=#{stu_num} and stu_org=#{stu_org}
+    </update>
+
+    <!--拒绝社团申请-->
+    <delete id="a_rejectorg">
+        delete from stu_org where stu_num=#{stu_num} and stu_org=#{stu_org}
+    </delete>
+</mapper>
